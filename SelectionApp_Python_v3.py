@@ -35,7 +35,8 @@ uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
 st.write("The alternatives must be in the first column, with feature scores"
          " in the following columns, labeled with each feature name.")
 if uploaded_file:
-    df = pd.read_excel(uploaded_file)
+    # df = pd.read_excel(uploaded_file)
+    df = pd.read_excel(uploaded_file, engine="openpyxl")
     st.write("### Data Preview")
     st.dataframe(df)
 
@@ -50,7 +51,7 @@ if uploaded_file:
 
     with col1:
         st.subheader("Select Feature Impacts")
-        # impact selectors here
+        
         st.write("**Positive: higher scores are better; Negative: lower scores are better**")
         Impact = []
         
@@ -68,13 +69,7 @@ if uploaded_file:
         
     with col2:
         st.subheader("Select Feature Weights")
-        # sliders here
-        
-        
-        # st.write("### Select Feature Impacts")
-        
-    
-        # st.write("### Select Feature Weights")
+      
         st.write("**Focus on the relative importance of the features.**")
         weights = []
     
@@ -91,10 +86,6 @@ if uploaded_file:
 #####################################################################
 #   Calculations: Running
 #####################################################################
-    # col1, col2, col3 = st.columns([1,2,1])
-
-    # with col2:
-    #     st.button("🚀 Run Model", type="primary")    
 
     if st.button("🚀 Run Model", type="primary"):
         st.divider()
@@ -274,18 +265,9 @@ if uploaded_file:
 #####################################################################
 #   RESULTS
 #####################################################################
-    # WinRate = np.sum(GMatrix, axis=1)
-    # LostRate = np.sum(GMatrix, axis=0)
-    
-    # 'Win Rate':ListRS,'Lost Rate':ListCS
+   
         Conclusion = pd.DataFrame({'Alternative': df.iloc[:,0],
                                    'Win Rate':ListRS,'Lost Rate':ListCS})
-    
-        # Conclusion = pd.DataFrame({
-        #     "Alternative": df.iloc[:, 0],
-        #     "Win Rate": WinRate,
-        #     "Lost Rate": LostRate
-        # })
         
         st.header("📈 Results")
     
@@ -298,9 +280,7 @@ if uploaded_file:
             "Score": Ranking
         }).sort_values(by="Score", ascending=False)
     
-        # st.dataframe(results)
-        
-        # results.style.highlight_max(subset=["Score"])
+ 
         st.dataframe(results.style.highlight_max(subset=["Score"],axis=0))
         
         st.divider()
@@ -312,19 +292,9 @@ if uploaded_file:
 
         with col2:
             st.error(f"📉 Least preferred: {results.iloc[-1,0]}")
-        # st.success(f"🏆 Best choice: {results.iloc[0,0]}")
-        # st.error(f"📉 Least preferred: {results.iloc[-1,0]}")
                
 #####################################################################
 
         csv1 = results.to_csv(index=False).encode('utf-8')
-        # csv2= Conclusion.to_csv(index=False).encode('utf-8')
         
         st.download_button("📥 Download Ranking",csv1,"Ranking.csv","text/csv")#,key="download_results_1")
-        # st.download_button("📥 Download Win/Lost Rates",csv2,"WinLostRates_ELECTRE.csv","text/csv")#,key="download_results_1")
-       
-        # st.subheader("📊 Ranking Visualization")
-        # st.bar_chart(results.set_index("Alternative"))
-        
-        # st.subheader("⚖️ Win vs Loss")
-        # st.bar_chart(Conclusion.set_index("Alternative")[["Win Rate", "Lost Rate"]])
